@@ -45,6 +45,7 @@
         [sender setBackgroundImage:[UIImage imageNamed:@"cardback"]
                           forState:UIControlStateNormal];
         [sender setTitle:@"" forState:UIControlStateNormal];
+        
         self.flipCount++;
     } else {
         Card *card = [self.deck drawRandomCard];
