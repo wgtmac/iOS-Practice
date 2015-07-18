@@ -10,20 +10,24 @@
 #import "PlayingCardDeck.h"
 
 @interface ViewController ()
-// weak because VIEW has a strong pointer to it already
+// weak because VIEW has a stron-g pointer to it already
 @property (weak, nonatomic) IBOutlet UILabel *flipsLabel;
 // private
 @property (nonatomic) int flipCount;
 
-@property (nonatomic) Deck* deck;
+@property (nonatomic, strong) Deck* deck;
 
 @end
 
 @implementation ViewController
 
 -(Deck *)deck{
-    if (!_deck) _deck = [[PlayingCardDeck alloc] init];
+    if (!_deck) _deck = [self createDeck];
     return _deck;
+}
+
+-(Deck *)createDeck{
+    return [[PlayingCardDeck alloc] init];
 }
 
 
@@ -41,15 +45,16 @@
         [sender setBackgroundImage:[UIImage imageNamed:@"cardback"]
                           forState:UIControlStateNormal];
         [sender setTitle:@"" forState:UIControlStateNormal];
+        self.flipCount++;
     } else {
-        [sender setBackgroundImage:[UIImage imageNamed:@"cardfront"]
-                          forState:UIControlStateNormal];
         Card *card = [self.deck drawRandomCard];
-        
-        [sender setTitle:[card contents] forState:UIControlStateNormal];
+        if (card){
+            [sender setBackgroundImage:[UIImage imageNamed:@"cardfront"]
+                              forState:UIControlStateNormal];
+            [sender setTitle:[card contents] forState:UIControlStateNormal];
+            self.flipCount++;
+        }
     }
-    self.flipCount++;
-    
 }
 
 
