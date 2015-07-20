@@ -14,6 +14,7 @@
 @property (strong, nonatomic) CardMatchingGame *game;
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
+@property (weak, nonatomic) IBOutlet UISwitch *modeSwitch;
 
 @end
 
@@ -54,6 +55,14 @@
 
 -(UIImage *)backgroundImageForCard:(Card *)card {
     return [UIImage imageNamed:card.isChosen ? @"cardfront" : @"cardback"];
+}
+
+- (IBAction)restartButtonTouched:(UIButton *)sender {
+    self.game = [[CardMatchingGame alloc] initWithCardCount:[self.cardButtons count]
+                                                  usingDeck:[self createDeck]];
+    [self updateUI];
+    [self.modeSwitch setOn: self.modeSwitch.on ? NO : YES];
+    self.game.numberOfMode = self.modeSwitch.on ? 3 : 2;
 }
 
 

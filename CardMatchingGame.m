@@ -12,6 +12,7 @@
 // readwrite is for private use
 @property (nonatomic, readwrite) NSInteger score;
 @property (nonatomic, strong) NSMutableArray *cards; // of Card
+@property (nonatomic) NSUInteger countOfFliped;
 @end
 
 @implementation CardMatchingGame
@@ -30,6 +31,8 @@
     self = [super init];
     
     if (self) {
+        self.countOfFliped = 0;
+        self.numberOfMode = 2;
         for (int i = 0; i < count; ++i) {
             Card *card = [deck drawRandomCard];
             if (card) {
@@ -59,21 +62,34 @@ static const int COST_TO_CHOOSE = 1;
         if (card.isChosen) {
             card.chosen = NO;
         } else {
-            
-            for (Card *otherCard in self.cards) {
-                if (otherCard.isChosen && !otherCard.isMatched) {
-                    int matchScore = [card match:@[otherCard]];
-                    if (matchScore) {
-                        self.score += matchScore * MATCH_BONUS;
+            self.countOfFliped++;
+            if (self.countOfFliped == self.numberOfMode) {
+                NSMutableArray *chosenAndNoneMatchedCard = [[NSMutableArray alloc] init];
+                for (Card *otherCard in self.cards) {
+                    if (otherCard.isChosen && !otherCard.isMatched) {
+                        [chosenAndNoneMatchedCard addObject:otherCard];
+                    }
+                }
+                
+                int matchScore = [card match:[chosenAndNoneMatchedCard copy]];
+                if (matchScore) {
+                    self.score += matchScore * MATCH_BONUS;
+                    for (Card *otherCard in chosenAndNoneMatchedCard){
+                        otherCard.chosen = YES;
                         otherCard.matched = YES;
-                        card.matched = YES;
-                    } else {
-                        self.score -= MISMATCH_PENALTY;
+                    }
+                    card.matched = YES;
+                    
+                    self.countOfFliped = 0;
+                } else {
+                    self.score -= MISMATCH_PENALTY;
+                    for (Card *otherCard in chosenAndNoneMatchedCard){
                         otherCard.chosen = NO;
                     }
-                    break;
+                    self.countOfFliped = 1;
                 }
             }
+            
             self.score -= COST_TO_CHOOSE;
             card.chosen = YES;
         }

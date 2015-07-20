@@ -20,6 +20,7 @@
 // no public setter
 // private setter is still valid
 @property (nonatomic, readonly) NSInteger score;
+@property (nonatomic) NSUInteger numberOfMode;
 
 
 @end
