@@ -7,9 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Deck.h"
+#import "CardMatchingGame.h"
 
 @interface ViewController : UIViewController
 
+// abstract class
+-(Deck *)createDeck;
+-(void)updateUIForButton:(UIButton*)cardButton usingCard:(Card*)card;
+-(NSUInteger)getMode;
+@property (strong, nonatomic) CardMatchingGame *game;
 
 @end
 

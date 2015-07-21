@@ -22,17 +22,24 @@
     return _cards;
 }
 
+-(NSMutableArray *)history {
+    if (!_history) _history = [[NSMutableArray alloc] init];
+    return _history;
+}
+
 -(instancetype)init{
     return nil;
 }
 
 -(instancetype)initWithCardCount:(NSUInteger)count
+                         andMode:(NSUInteger)mode
                        usingDeck:(Deck *)deck{
     self = [super init];
     
     if (self) {
         self.countOfFliped = 0;
-        self.numberOfMode = 2;
+        self.numberOfMode = mode;
+        [self.history removeAllObjects];
         for (int i = 0; i < count; ++i) {
             Card *card = [deck drawRandomCard];
             if (card) {
@@ -65,9 +72,13 @@ static const int COST_TO_CHOOSE = 1;
             self.countOfFliped++;
             if (self.countOfFliped == self.numberOfMode) {
                 NSMutableArray *chosenAndNoneMatchedCard = [[NSMutableArray alloc] init];
+                NSMutableString *message = [[NSMutableString alloc] initWithString:card.contents];
+                
                 for (Card *otherCard in self.cards) {
                     if (otherCard.isChosen && !otherCard.isMatched) {
                         [chosenAndNoneMatchedCard addObject:otherCard];
+                        [message appendString:@", "];
+                        [message appendString:otherCard.contents];
                     }
                 }
                 
@@ -79,15 +90,19 @@ static const int COST_TO_CHOOSE = 1;
                         otherCard.matched = YES;
                     }
                     card.matched = YES;
-                    
                     self.countOfFliped = 0;
+                    
+                    [message appendString:@" are matched!"];
                 } else {
                     self.score -= MISMATCH_PENALTY;
                     for (Card *otherCard in chosenAndNoneMatchedCard){
                         otherCard.chosen = NO;
                     }
                     self.countOfFliped = 1;
+                    [message appendString:@" are mismatched!"];
                 }
+                
+                [self.history addObject:message];
             }
             
             self.score -= COST_TO_CHOOSE;
